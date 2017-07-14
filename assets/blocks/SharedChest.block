@@ -7,12 +7,12 @@
     "rotation": "horizontal",
     // Graphics
     "tiles": {
-        "sides": "ChestSides",
-        "front": "ChestFront",
-        "topBottom": "ChestTopBottom"
+        "sides": "core:ChestSides",
+        "front": "core:ChestFront",
+        "topBottom": "core:ChestTopBottom"
     },
     "entity": {
-        "prefab": "chest"
+        "prefab": "SharedChest"
     },
     "inventory": {
         "stackable": false,

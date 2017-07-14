@@ -15,11 +15,52 @@
  */
 package org.terasology.sharedInventory.systems;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.EventPriority;
+import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.health.DoDestroyEvent;
+import org.terasology.logic.inventory.InventoryComponent;
+import org.terasology.logic.inventory.block.RetainBlockInventoryComponent;
+import org.terasology.sharedInventory.components.SharedInventoryComponent;
 
 @RegisterSystem
 public class SharedInventorySystem extends BaseComponentSystem
 {
-	
+	private Logger logger = LoggerFactory.getLogger(SharedInventorySystem.class);
+
+	private InventoryComponent sharedInventoryComponent;
+
+	@ReceiveEvent(priority = EventPriority.PRIORITY_HIGH,
+	              components = {InventoryComponent.class, SharedInventoryComponent.class})
+	public void onActivate(ActivateEvent activateEvent, EntityRef activatedBlock)
+	{
+		logger.info("Activated : " + activatedBlock.toString());
+		logger.info(activatedBlock.getComponent(InventoryComponent.class).toString());
+
+		InventoryComponent inventoryComponent = activatedBlock.getComponent(InventoryComponent.class);
+
+		if (sharedInventoryComponent == null)
+		{
+			sharedInventoryComponent = inventoryComponent;
+			logger.info("Set shared inventory to this blocks inventory");
+		}
+		else if (inventoryComponent != sharedInventoryComponent)
+		{
+			activatedBlock.addOrSaveComponent(sharedInventoryComponent);
+			logger.info("Set this blocks inventory component to the shared one");
+		}
+	}
+
+	@ReceiveEvent(components = {InventoryComponent.class, SharedInventoryComponent.class})
+	public void onDoDestroy(DoDestroyEvent doDestroyEvent, EntityRef blockToDestroy)
+	{
+		logger.info("Destroying : " + blockToDestroy.toString());
+
+		blockToDestroy.addOrSaveComponent(new InventoryComponent());
+	}
 }

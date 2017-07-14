@@ -60,8 +60,5 @@
         "screen": "core:containerScreen"
     },
     "Network": {},
-    "SharedInventory":
-    {
-        "sharedInventoryId": 0
-    }
+    "SharedInventory": {}
 }

@@ -36,7 +36,7 @@ public class SharedInventorySystem extends BaseComponentSystem
 {
 	private Logger logger = LoggerFactory.getLogger(SharedInventorySystem.class);
 
-	private final Map<Integer, InventoryComponent> inventoryComponentMap = new HashMap<>();
+	private final Map<String, InventoryComponent> inventoryComponentMap = new HashMap<>();
 
 	@ReceiveEvent(priority = EventPriority.PRIORITY_HIGH,
 	              components = {InventoryComponent.class, SharedInventoryComponent.class})
@@ -47,7 +47,7 @@ public class SharedInventorySystem extends BaseComponentSystem
 
 		InventoryComponent entityInventory = activatedEntity.getComponent(InventoryComponent.class);
 
-		int sharedInventoryId = activatedEntity.getComponent(SharedInventoryComponent.class).sharedInventoryId;
+		String sharedInventoryId = activatedEntity.getComponent(SharedInventoryComponent.class).sharedInventoryId;
 		InventoryComponent sharedInventory = inventoryComponentMap.get(sharedInventoryId);
 
 		if (sharedInventory == null)

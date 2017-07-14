@@ -1,0 +1,9 @@
+{
+    "id" : "SharedInventory",
+    "version" : "0.1.0-SNAPSHOT",
+    "author" : "",
+    "displayName" : "SharedInventory",
+    "description" : "",
+    "dependencies" : [],
+    "serverSideOnly" : false
+}

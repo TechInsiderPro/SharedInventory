@@ -4,6 +4,11 @@
     "author" : "",
     "displayName" : "SharedInventory",
     "description" : "",
-    "dependencies" : [],
+    "dependencies" :
+    [
+        {
+            "id" : "Core"
+        }
+    ],
     "serverSideOnly" : false
 }

@@ -52,7 +52,6 @@
             0
         ]
     },
-    "RetainBlockInventory": {},
     "PlaySoundAction": {
         "sounds": "engine:click"
     },
@@ -60,6 +59,6 @@
     "InteractionScreen": {
         "screen": "core:containerScreen"
     },
-    "Network": {
-    }
+    "Network": {},
+    "SharedInventory": {}
 }

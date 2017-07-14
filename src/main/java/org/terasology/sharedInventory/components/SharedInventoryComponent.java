@@ -21,14 +21,14 @@ import org.terasology.network.Replicate;
 public class SharedInventoryComponent implements Component
 {
 	@Replicate
-	public int sharedInventoryId;
+	public String sharedInventoryId;
 
 	public SharedInventoryComponent()
 	{
-		sharedInventoryId = 0;
+		sharedInventoryId = "default";
 	}
 
-	public SharedInventoryComponent(int sharedInventoryId)
+	public SharedInventoryComponent(String sharedInventoryId)
 	{
 		this.sharedInventoryId = sharedInventoryId;
 	}

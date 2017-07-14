@@ -16,7 +16,20 @@
 package org.terasology.sharedInventory.components;
 
 import org.terasology.entitySystem.Component;
+import org.terasology.network.Replicate;
 
 public class SharedInventoryComponent implements Component
 {
+	@Replicate
+	public int sharedInventoryId;
+
+	public SharedInventoryComponent()
+	{
+		sharedInventoryId = 0;
+	}
+
+	public SharedInventoryComponent(int sharedInventoryId)
+	{
+		this.sharedInventoryId = sharedInventoryId;
+	}
 }

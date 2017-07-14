@@ -28,39 +28,45 @@ import org.terasology.logic.inventory.InventoryComponent;
 import org.terasology.logic.inventory.block.RetainBlockInventoryComponent;
 import org.terasology.sharedInventory.components.SharedInventoryComponent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RegisterSystem
 public class SharedInventorySystem extends BaseComponentSystem
 {
 	private Logger logger = LoggerFactory.getLogger(SharedInventorySystem.class);
 
-	private InventoryComponent sharedInventoryComponent;
+	private final Map<Integer, InventoryComponent> inventoryComponentMap = new HashMap<>();
 
 	@ReceiveEvent(priority = EventPriority.PRIORITY_HIGH,
 	              components = {InventoryComponent.class, SharedInventoryComponent.class})
-	public void onActivate(ActivateEvent activateEvent, EntityRef activatedBlock)
+	public void onActivate(ActivateEvent activateEvent, EntityRef activatedEntity)
 	{
-		logger.info("Activated : " + activatedBlock.toString());
-		logger.info(activatedBlock.getComponent(InventoryComponent.class).toString());
+		logger.info("Activated : " + activatedEntity.toString());
+		logger.info("Shared inventory component : " + activatedEntity.getComponent(SharedInventoryComponent.class).toString());
 
-		InventoryComponent inventoryComponent = activatedBlock.getComponent(InventoryComponent.class);
+		InventoryComponent entityInventory = activatedEntity.getComponent(InventoryComponent.class);
 
-		if (sharedInventoryComponent == null)
+		int sharedInventoryId = activatedEntity.getComponent(SharedInventoryComponent.class).sharedInventoryId;
+		InventoryComponent sharedInventory = inventoryComponentMap.get(sharedInventoryId);
+
+		if (sharedInventory == null)
 		{
-			sharedInventoryComponent = inventoryComponent;
-			logger.info("Set shared inventory to this blocks inventory");
+			inventoryComponentMap.put(sharedInventoryId, entityInventory);
+			logger.info("Set shared inventory to this entity's inventory");
 		}
-		else if (inventoryComponent != sharedInventoryComponent)
+		else if (entityInventory != sharedInventory)
 		{
-			activatedBlock.addOrSaveComponent(sharedInventoryComponent);
-			logger.info("Set this blocks inventory component to the shared one");
+			activatedEntity.addOrSaveComponent(sharedInventory);
+			logger.info("Set this entity's inventory component to the shared one");
 		}
 	}
 
 	@ReceiveEvent(components = {InventoryComponent.class, SharedInventoryComponent.class})
-	public void onDoDestroy(DoDestroyEvent doDestroyEvent, EntityRef blockToDestroy)
+	public void onDoDestroy(DoDestroyEvent doDestroyEvent, EntityRef entityToDestroy)
 	{
-		logger.info("Destroying : " + blockToDestroy.toString());
+		logger.info("Destroying : " + entityToDestroy.toString());
 
-		blockToDestroy.addOrSaveComponent(new InventoryComponent());
+		entityToDestroy.addOrSaveComponent(new InventoryComponent());
 	}
 }

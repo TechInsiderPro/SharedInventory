@@ -25,8 +25,8 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.health.DoDestroyEvent;
 import org.terasology.logic.inventory.InventoryComponent;
-import org.terasology.logic.inventory.block.RetainBlockInventoryComponent;
 import org.terasology.sharedInventory.components.SharedInventoryComponent;
+import org.terasology.sharedInventory.events.ChangeSharedInventoryChannelEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,23 +43,10 @@ public class SharedInventorySystem extends BaseComponentSystem
 	public void onActivate(ActivateEvent activateEvent, EntityRef activatedEntity)
 	{
 		logger.info("Activated : " + activatedEntity.toString());
-		logger.info("Shared inventory component : " + activatedEntity.getComponent(SharedInventoryComponent.class).toString());
+		logger.info("Shared inventory component : " +
+		            activatedEntity.getComponent(SharedInventoryComponent.class).sharedInventoryId);
 
-		InventoryComponent entityInventory = activatedEntity.getComponent(InventoryComponent.class);
-
-		String sharedInventoryId = activatedEntity.getComponent(SharedInventoryComponent.class).sharedInventoryId;
-		InventoryComponent sharedInventory = inventoryComponentMap.get(sharedInventoryId);
-
-		if (sharedInventory == null)
-		{
-			inventoryComponentMap.put(sharedInventoryId, entityInventory);
-			logger.info("Set shared inventory to this entity's inventory");
-		}
-		else if (entityInventory != sharedInventory)
-		{
-			activatedEntity.addOrSaveComponent(sharedInventory);
-			logger.info("Set this entity's inventory component to the shared one");
-		}
+		updateInventoryComponent(activatedEntity);
 	}
 
 	@ReceiveEvent(components = {InventoryComponent.class, SharedInventoryComponent.class})
@@ -68,5 +55,39 @@ public class SharedInventorySystem extends BaseComponentSystem
 		logger.info("Destroying : " + entityToDestroy.toString());
 
 		entityToDestroy.addOrSaveComponent(new InventoryComponent());
+	}
+
+	@ReceiveEvent(components = {InventoryComponent.class, SharedInventoryComponent.class})
+	public void onChangeChannel(ChangeSharedInventoryChannelEvent changeSharedInventoryChannelEvent,
+	                            EntityRef entityRef)
+	{
+		entityRef.getComponent(SharedInventoryComponent.class).sharedInventoryId = changeSharedInventoryChannelEvent.getTargetChannel();
+		logger.info("Set channel to " + changeSharedInventoryChannelEvent.getTargetChannel());
+
+		//Clear the InventoryComponent to avoid problems later
+		entityRef.addOrSaveComponent(new InventoryComponent(30));
+		updateInventoryComponent(entityRef);
+	}
+
+	/*
+		Change InventoryComponent of entityRef to match the shared inventory connected to it's channel
+	 */
+	private void updateInventoryComponent(EntityRef entityRef)
+	{
+		String channel = entityRef.getComponent(SharedInventoryComponent.class).sharedInventoryId;
+
+		InventoryComponent entityInventory = entityRef.getComponent(InventoryComponent.class);
+		InventoryComponent sharedInventory = inventoryComponentMap.get(channel);
+
+		if (sharedInventory == null)
+		{
+			inventoryComponentMap.put(channel, entityInventory);
+			logger.info("Set shared inventory to this entity's inventory");
+		}
+		else if (entityInventory != sharedInventory)
+		{
+			entityRef.addOrSaveComponent(sharedInventory);
+			logger.info("Set this entity's inventory component to the shared one");
+		}
 	}
 }

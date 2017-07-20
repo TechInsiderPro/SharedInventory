@@ -8,7 +8,7 @@
     // Graphics
     "tiles": {
         "sides": "core:ChestSides",
-        "front": "core:ChestFront",
+        "front": "sharedInventory:SharedChestFront",
         "topBottom": "core:ChestTopBottom"
     },
     "entity": {
